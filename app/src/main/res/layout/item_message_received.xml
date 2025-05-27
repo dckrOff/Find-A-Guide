@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="16dp"
+    android:paddingTop="4dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="4dp">
+
+    <ImageView
+        android:id="@+id/ivGuideAvatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:contentDescription="@string/guide_photo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_person" />
+
+    <TextView
+        android:id="@+id/tvMessageReceived"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_message_received"
+        android:maxWidth="260dp"
+        android:padding="12dp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="@color/black"
+        app:layout_constraintStart_toEndOf="@+id/ivGuideAvatar"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="This is a sample message that I received from the guide. It can be multiple lines long." />
+
+    <TextView
+        android:id="@+id/tvTimeReceived"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+        android:textColor="@color/gray"
+        app:layout_constraintStart_toStartOf="@+id/tvMessageReceived"
+        app:layout_constraintTop_toBottomOf="@+id/tvMessageReceived"
+        tools:text="10:32 AM" />
+
+</androidx.constraintlayout.widget.ConstraintLayout> 

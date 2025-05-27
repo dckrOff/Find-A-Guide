@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "773684865564",
+    "project_id": "find-a-guide-9fe35",
+    "storage_bucket": "find-a-guide-9fe35.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:773684865564:android:dec7cb904654bc3de20dd9",
+        "android_client_info": {
+          "package_name": "uz.dckroff.findaguide"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbFpwsINC86g_aWVx8eTJdxzz9e6hxlLA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

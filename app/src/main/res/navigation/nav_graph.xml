@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="uz.dckroff.findaguide.ui.fragments.HomeFragment"
+        android:label="@string/home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_guideDetailsActivity"
+            app:destination="@id/guideDetailsActivity" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="uz.dckroff.findaguide.ui.fragments.SearchFragment"
+        android:label="@string/search"
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_searchFragment_to_guideDetailsActivity"
+            app:destination="@id/guideDetailsActivity" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="uz.dckroff.findaguide.ui.fragments.MapFragment"
+        android:label="@string/map"
+        tools:layout="@layout/fragment_map">
+        <action
+            android:id="@+id/action_mapFragment_to_guideDetailsActivity"
+            app:destination="@id/guideDetailsActivity" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/bookingsFragment"
+        android:name="uz.dckroff.findaguide.ui.fragments.BookingsFragment"
+        android:label="@string/bookings"
+        tools:layout="@layout/fragment_bookings">
+        <action
+            android:id="@+id/action_bookingsFragment_to_chatActivity"
+            app:destination="@id/chatActivity" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="uz.dckroff.findaguide.ui.fragments.ProfileFragment"
+        android:label="@string/profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <activity
+        android:id="@+id/guideDetailsActivity"
+        android:name="uz.dckroff.findaguide.ui.activities.GuideDetailsActivity"
+        android:label="@string/guide_photo"
+        tools:layout="@layout/activity_guide_details">
+        <argument
+            android:name="guideId"
+            app:argType="string"
+            app:nullable="false" />
+    </activity>
+
+    <activity
+        android:id="@+id/bookingActivity"
+        android:name="uz.dckroff.findaguide.ui.activities.BookingActivity"
+        android:label="@string/booking_details"
+        tools:layout="@layout/activity_booking">
+        <argument
+            android:name="guideId"
+            app:argType="string"
+            app:nullable="false" />
+    </activity>
+
+    <activity
+        android:id="@+id/chatActivity"
+        android:name="uz.dckroff.findaguide.ui.activities.ChatActivity"
+        android:label="@string/chat"
+        tools:layout="@layout/activity_chat">
+        <argument
+            android:name="guideId"
+            app:argType="string"
+            app:nullable="false" />
+    </activity>
+
+</navigation>
