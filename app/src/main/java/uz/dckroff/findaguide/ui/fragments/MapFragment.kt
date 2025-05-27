@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -15,14 +18,20 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import uz.dckroff.findaguide.R
 import uz.dckroff.findaguide.databinding.FragmentMapBinding
+import uz.dckroff.findaguide.model.Guide
+import uz.dckroff.findaguide.viewmodel.MapViewModel
+import kotlin.random.Random
 
 class MapFragment : Fragment(), OnMapReadyCallback {
 
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
     
+    private val viewModel: MapViewModel by viewModels()
+    
     private var googleMap: GoogleMap? = null
     private var selectedMarker: Marker? = null
+    private var guideMarkers = mutableMapOf<String, Marker>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,6 +50,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
         
         setupUI()
+        observeViewModel()
     }
     
     private fun setupUI() {
@@ -56,11 +66,39 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
         
         binding.btnBookNow.setOnClickListener {
-            navigateToGuideDetails()
+            navigateToBooking()
         }
         
         // Initially hide the guide info card
         binding.cardGuideInfo.visibility = View.GONE
+    }
+    
+    private fun observeViewModel() {
+        // Наблюдаем за списком гидов на карте
+        viewModel.guides.observe(viewLifecycleOwner) { guides ->
+            if (googleMap != null) {
+                updateMapMarkers(guides)
+            }
+        }
+        
+        // Наблюдаем за выбранным гидом
+        viewModel.selectedGuide.observe(viewLifecycleOwner) { guide ->
+            guide?.let {
+                showGuideInfo(it)
+            }
+        }
+        
+        // Наблюдаем за статусом загрузки
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            binding.progressBar.isVisible = isLoading
+        }
+        
+        // Наблюдаем за ошибками
+        viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
+            if (errorMessage.isNotEmpty()) {
+                Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
     
     private fun showFilterDialog() {
@@ -71,57 +109,80 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
         
-        // Add some placeholder guide markers
-        addGuidePlaceholders()
-        
         // Set default location (New York)
         val defaultLocation = LatLng(40.7128, -74.0060)
         googleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12f))
-    }
-    
-    private fun addGuidePlaceholders() {
-        // Add placeholder guides to the map
-        val locations = listOf(
-            LatLng(40.7128, -74.0060), // New York
-            LatLng(40.7282, -73.9942), // Manhattan
-            LatLng(40.7484, -73.9857), // Times Square
-            LatLng(40.7527, -73.9772)  // Midtown
-        )
-        
-        val names = listOf("John Smith", "Maria Garcia", "Alex Johnson", "Emma Wilson")
-        val ratings = listOf(4.8, 4.5, 4.9, 4.7)
-        
-        for (i in locations.indices) {
-            val marker = googleMap?.addMarker(
-                MarkerOptions()
-                    .position(locations[i])
-                    .title(names[i])
-                    .snippet("Rating: ${ratings[i]}")
-            )
-            marker?.tag = "guide_id_$i" // Store guide ID for later use
-        }
         
         // Set marker click listener
         googleMap?.setOnMarkerClickListener { marker ->
             selectedMarker = marker
-            showGuideInfo(marker)
+            val guideId = marker.tag as? String
+            guideId?.let {
+                val guide = viewModel.guides.value?.find { guide -> guide.id == it }
+                guide?.let { selectedGuide ->
+                    viewModel.setSelectedGuide(selectedGuide)
+                }
+            }
             true
+        }
+        
+        // Загружаем гидов на карте
+        viewModel.loadAllGuides()
+    }
+    
+    private fun updateMapMarkers(guides: List<Guide>) {
+        // Очищаем существующие маркеры
+        googleMap?.clear()
+        guideMarkers.clear()
+        
+        // Добавляем маркеры для каждого гида
+        guides.forEach { guide ->
+            // В реальном приложении здесь будут реальные координаты
+            // Для примера используем случайные координаты вокруг Нью-Йорка
+            val lat = 40.7128 + (Random.nextDouble() * 0.04 - 0.02)
+            val lng = -74.0060 + (Random.nextDouble() * 0.04 - 0.02)
+            val location = LatLng(lat, lng)
+            
+            val marker = googleMap?.addMarker(
+                MarkerOptions()
+                    .position(location)
+                    .title(guide.name)
+                    .snippet("Rating: ${guide.rating}")
+            )
+            
+            marker?.tag = guide.id
+            marker?.let { guideMarkers[guide.id] = it }
         }
     }
     
-    private fun showGuideInfo(marker: Marker) {
+    private fun showGuideInfo(guide: Guide) {
         // Show guide info card
         binding.cardGuideInfo.visibility = View.VISIBLE
-        binding.tvGuideName.text = marker.title
-        binding.tvRating.text = marker.snippet
+        binding.tvGuideName.text = guide.name
+        binding.tvRating.text = "Rating: ${guide.rating}"
+        
+        // Перемещаем карту к выбранному гиду
+        guideMarkers[guide.id]?.let { marker ->
+            googleMap?.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
+        }
     }
     
     private fun navigateToGuideDetails() {
-        val guideId = selectedMarker?.tag as? String ?: "sample_guide_id"
-        val bundle = Bundle().apply {
-            putString("guideId", guideId)
+        viewModel.selectedGuide.value?.let { guide ->
+            val bundle = Bundle().apply {
+                putString("guideId", guide.id)
+            }
+            findNavController().navigate(R.id.guideDetailsActivity, bundle)
         }
-        findNavController().navigate(R.id.action_mapFragment_to_guideDetailsActivity, bundle)
+    }
+    
+    private fun navigateToBooking() {
+        viewModel.selectedGuide.value?.let { guide ->
+            val bundle = Bundle().apply {
+                putString("guideId", guide.id)
+            }
+            findNavController().navigate(R.id.bookingActivity, bundle)
+        }
     }
 
     override fun onDestroyView() {

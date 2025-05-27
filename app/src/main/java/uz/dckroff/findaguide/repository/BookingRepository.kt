@@ -34,13 +34,11 @@ interface BookingRepository {
      */
     suspend fun createBooking(
         guideId: String,
-        date: Date,
-        startTime: String,
-        duration: Int,
-        price: Int,
-        notes: String? = null,
-        numberOfPeople: Int
-    ): String?
+        date: String,
+        time: String,
+        numberOfPeople: Int,
+        notes: String
+    ): Boolean
     
     /**
      * Отменить бронирование

@@ -11,8 +11,6 @@ import uz.dckroff.findaguide.R
 import uz.dckroff.findaguide.databinding.ItemBookingBinding
 import uz.dckroff.findaguide.model.Booking
 import uz.dckroff.findaguide.model.BookingStatus
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 class BookingAdapter(
     private val onBookingClick: (Booking) -> Unit,
@@ -35,8 +33,6 @@ class BookingAdapter(
     inner class BookingViewHolder(private val binding: ItemBookingBinding) : 
         RecyclerView.ViewHolder(binding.root) {
         
-        private val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-        
         init {
             binding.root.setOnClickListener {
                 val position = bindingAdapterPosition
@@ -54,19 +50,10 @@ class BookingAdapter(
         }
         
         fun bind(booking: Booking) {
-            // Форматируем дату
-            val formattedDate = dateFormat.format(booking.date)
-            
-            binding.tvBookingDate.text = formattedDate
-            binding.tvBookingTime.text = booking.startTime
-            binding.tvBookingDuration.text = binding.root.context.getString(
-                R.string.booking_duration,
-                booking.duration
-            )
-            binding.tvBookingPrice.text = binding.root.context.getString(
-                R.string.price_value,
-                booking.price
-            )
+            binding.tvBookingDate.text = booking.date
+            binding.tvBookingTime.text = booking.time
+            binding.tvBookingDuration.text = "${booking.numberOfPeople} person(s)"
+            binding.tvBookingPrice.text = "$${booking.price}"
             
             // Устанавливаем статус бронирования и его цвет
             val statusText: String

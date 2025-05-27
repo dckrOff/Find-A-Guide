@@ -40,15 +40,15 @@ class DestinationAdapter(private val onDestinationClick: (Destination) -> Unit) 
         
         fun bind(destination: Destination) {
             binding.tvDestinationName.text = destination.name
-            binding.tvDestinationCountry.text = destination.country
+            binding.tvDestinationCountry.text = destination.description
             binding.tvGuideCount.text = binding.root.context.getString(
                 R.string.available_guides_count, 
-                destination.guideCount
+                destination.guidesCount
             )
             
             // Загружаем изображение направления с использованием Glide
             Glide.with(binding.root)
-                .load(destination.imageUrl)
+                .load(destination.photo)
                 .placeholder(R.drawable.placeholder_destination)
                 .error(R.drawable.placeholder_destination)
                 .centerCrop()

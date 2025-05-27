@@ -1,13 +1,13 @@
 package uz.dckroff.findaguide.model
 
 /**
- * Модель данных популярного направления
+ * Модель данных для направления (места)
  */
 data class Destination(
-    val id: String,
-    val name: String,
-    val country: String,
-    val imageUrl: String,
-    val description: String,
-    val guideCount: Int
+    val id: String = "",
+    val name: String = "",
+    val description: String = "",
+    val photo: String = "",
+    val rating: Float = 0f,
+    val guidesCount: Int = 0
 ) 

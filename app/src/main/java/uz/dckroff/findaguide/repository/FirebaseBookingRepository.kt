@@ -1,46 +1,28 @@
-package uz.dckroff.findaguide.repository.impl
+package uz.dckroff.findaguide.repository
 
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.tasks.await
 import uz.dckroff.findaguide.model.Booking
 import uz.dckroff.findaguide.model.BookingStatus
-import uz.dckroff.findaguide.repository.BookingRepository
-import java.util.Date
-import java.util.UUID
+import java.util.*
 
 /**
- * Реализация репозитория для работы с бронированиями через Firebase
+ * Реализация репозитория бронирований с использованием Firebase
  */
 class FirebaseBookingRepository : BookingRepository {
     
-    private val auth = FirebaseAuth.getInstance()
-    private val firestore = FirebaseFirestore.getInstance()
-    private val bookingsCollection = firestore.collection("bookings")
-    
-    private fun getCurrentUserId(): String? = auth.currentUser?.uid
-    
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getUserBookings(): Flow<List<Booking>> = flow {
         // Здесь будет реальная реализация с Firebase
         // Для примера возвращаем пустой список
         emit(emptyList())
     }
     
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getUpcomingBookings(): Flow<List<Booking>> = flow {
         // Здесь будет реальная реализация с Firebase
         // Для примера возвращаем тестовые данные
         emit(generateSampleBookings(BookingStatus.CONFIRMED))
     }
     
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getPastBookings(): Flow<List<Booking>> = flow {
         // Здесь будет реальная реализация с Firebase
         // Для примера возвращаем тестовые данные

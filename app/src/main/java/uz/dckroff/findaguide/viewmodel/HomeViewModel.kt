@@ -7,27 +7,24 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import uz.dckroff.findaguide.model.Destination
 import uz.dckroff.findaguide.model.Guide
-import uz.dckroff.findaguide.repository.DestinationRepository
 import uz.dckroff.findaguide.repository.GuideRepository
 import uz.dckroff.findaguide.di.RepositoryModule
 
 /**
- * ViewModel для главного экрана приложения
+ * ViewModel для главного экрана
  */
 class HomeViewModel : ViewModel() {
     
     private val guideRepository: GuideRepository = RepositoryModule.provideGuideRepository()
-    private val destinationRepository: DestinationRepository = RepositoryModule.provideDestinationRepository()
     
-    // LiveData для избранных гидов
+    // LiveData для популярных гидов
     private val _featuredGuides = MutableLiveData<List<Guide>>()
     val featuredGuides: LiveData<List<Guide>> = _featuredGuides
     
     // LiveData для популярных направлений
-    private val _popularDestinations = MutableLiveData<List<Destination>>()
-    val popularDestinations: LiveData<List<Destination>> = _popularDestinations
+    private val _popularDestinations = MutableLiveData<List<String>>()
+    val popularDestinations: LiveData<List<String>> = _popularDestinations
     
     // LiveData для статуса загрузки
     private val _isLoading = MutableLiveData<Boolean>()
@@ -38,49 +35,39 @@ class HomeViewModel : ViewModel() {
     val error: LiveData<String> = _error
     
     /**
-     * Загружает данные для главного экрана
+     * Загрузить данные для главного экрана
      */
     fun loadHomeData() {
         _isLoading.value = true
         
-        // Загружаем избранных гидов
+        // Загружаем популярных гидов
         guideRepository.getFeaturedGuides()
             .onEach { guides ->
                 _featuredGuides.value = guides
+                _isLoading.value = false
             }
             .catch { e ->
                 _error.value = e.message ?: "Failed to load featured guides"
+                _isLoading.value = false
             }
             .launchIn(viewModelScope)
         
         // Загружаем популярные направления
-        destinationRepository.getPopularDestinations()
-            .onEach { destinations ->
-                _popularDestinations.value = destinations
-                _isLoading.value = false
-            }
-            .catch { e ->
-                _error.value = e.message ?: "Failed to load popular destinations"
-                _isLoading.value = false
-            }
-            .launchIn(viewModelScope)
+        loadPopularDestinations()
     }
     
     /**
-     * Поиск гидов по местоположению
+     * Загрузить популярные направления
      */
-    fun searchGuidesByLocation(location: String) {
-        _isLoading.value = true
-        
-        guideRepository.searchGuidesByLocation(location)
-            .onEach { guides ->
-                _featuredGuides.value = guides
-                _isLoading.value = false
-            }
-            .catch { e ->
-                _error.value = e.message ?: "Failed to search guides"
-                _isLoading.value = false
-            }
-            .launchIn(viewModelScope)
+    private fun loadPopularDestinations() {
+        // Для примера используем статический список
+        _popularDestinations.value = listOf(
+            "New York",
+            "Paris",
+            "Tokyo",
+            "Rome",
+            "London",
+            "Barcelona"
+        )
     }
 } 

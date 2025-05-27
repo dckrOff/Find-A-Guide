@@ -12,7 +12,7 @@ import uz.dckroff.findaguide.di.RepositoryModule
 import java.util.Date
 
 /**
- * ViewModel для экрана бронирования гида
+ * ViewModel для экрана создания бронирования
  */
 class BookingViewModel : ViewModel() {
     
@@ -23,9 +23,9 @@ class BookingViewModel : ViewModel() {
     private val _guide = MutableLiveData<Guide>()
     val guide: LiveData<Guide> = _guide
     
-    // LiveData для ID созданного бронирования
-    private val _bookingId = MutableLiveData<String>()
-    val bookingId: LiveData<String> = _bookingId
+    // LiveData для статуса создания бронирования
+    private val _bookingCreated = MutableLiveData<Boolean>()
+    val bookingCreated: LiveData<Boolean> = _bookingCreated
     
     // LiveData для статуса загрузки
     private val _isLoading = MutableLiveData<Boolean>()
@@ -62,34 +62,31 @@ class BookingViewModel : ViewModel() {
      */
     fun createBooking(
         guideId: String,
-        date: Date,
-        startTime: String,
-        duration: Int,
-        price: Int,
-        notes: String? = null,
-        numberOfPeople: Int = 1
+        date: String,
+        time: String,
+        numberOfPeople: Int,
+        notes: String
     ) {
         _isLoading.value = true
         
         viewModelScope.launch {
             try {
-                val bookingId = bookingRepository.createBooking(
+                val success = bookingRepository.createBooking(
                     guideId = guideId,
                     date = date,
-                    startTime = startTime,
-                    duration = duration,
-                    price = price,
-                    notes = notes,
-                    numberOfPeople = numberOfPeople
+                    time = time,
+                    numberOfPeople = numberOfPeople,
+                    notes = notes
                 )
                 
-                if (bookingId != null) {
-                    _bookingId.value = bookingId
-                } else {
+                _bookingCreated.value = success
+                
+                if (!success) {
                     _error.value = "Failed to create booking"
                 }
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to create booking"
+                _bookingCreated.value = false
             } finally {
                 _isLoading.value = false
             }

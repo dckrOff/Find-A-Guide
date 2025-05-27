@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="uz.dckroff.findaguide.ui.fragments.HomeFragment"
-        android:label="@string/home"
+        android:label="fragment_home"
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_homeFragment_to_searchFragment"
@@ -21,7 +21,7 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="uz.dckroff.findaguide.ui.fragments.SearchFragment"
-        android:label="@string/search"
+        android:label="fragment_search"
         tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment_to_guideDetailsActivity"
@@ -31,7 +31,7 @@
     <fragment
         android:id="@+id/mapFragment"
         android:name="uz.dckroff.findaguide.ui.fragments.MapFragment"
-        android:label="@string/map"
+        android:label="fragment_map"
         tools:layout="@layout/fragment_map">
         <action
             android:id="@+id/action_mapFragment_to_guideDetailsActivity"
@@ -41,7 +41,7 @@
     <fragment
         android:id="@+id/bookingsFragment"
         android:name="uz.dckroff.findaguide.ui.fragments.BookingsFragment"
-        android:label="@string/bookings"
+        android:label="fragment_bookings"
         tools:layout="@layout/fragment_bookings">
         <action
             android:id="@+id/action_bookingsFragment_to_chatActivity"
@@ -51,13 +51,13 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="uz.dckroff.findaguide.ui.fragments.ProfileFragment"
-        android:label="@string/profile"
+        android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
 
     <activity
         android:id="@+id/guideDetailsActivity"
         android:name="uz.dckroff.findaguide.ui.activities.GuideDetailsActivity"
-        android:label="@string/guide_photo"
+        android:label="activity_guide_details"
         tools:layout="@layout/activity_guide_details">
         <argument
             android:name="guideId"
@@ -68,7 +68,7 @@
     <activity
         android:id="@+id/bookingActivity"
         android:name="uz.dckroff.findaguide.ui.activities.BookingActivity"
-        android:label="@string/booking_details"
+        android:label="activity_booking"
         tools:layout="@layout/activity_booking">
         <argument
             android:name="guideId"
@@ -79,12 +79,18 @@
     <activity
         android:id="@+id/chatActivity"
         android:name="uz.dckroff.findaguide.ui.activities.ChatActivity"
-        android:label="@string/chat"
+        android:label="activity_chat"
         tools:layout="@layout/activity_chat">
         <argument
             android:name="guideId"
             app:argType="string"
             app:nullable="false" />
     </activity>
+
+    <activity
+        android:id="@+id/bookingDetailsActivity"
+        android:name="uz.dckroff.findaguide.ui.activities.BookingDetailsActivity"
+        android:label="activity_booking_details"
+        tools:layout="@layout/activity_booking_details" />
 
 </navigation>
