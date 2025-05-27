@@ -35,7 +35,7 @@ class BookingActivity : AppCompatActivity() {
         supportActionBar?.title = getString(R.string.booking_details)
         
         binding.toolbar.setNavigationOnClickListener {
-            onBackPressed()
+            finish()
         }
     }
     

@@ -136,7 +136,7 @@ class FirebaseBookingRepository : BookingRepository {
         duration: Int,
         price: Int,
         notes: String?,
-        location: String?
+        numberOfPeople: Int
     ): String? {
         val userId = getCurrentUserId() ?: return null
         
@@ -153,8 +153,7 @@ class FirebaseBookingRepository : BookingRepository {
                 price = price,
                 status = BookingStatus.PENDING,
                 notes = notes,
-                location = location,
-                createdAt = Date()
+                numberOfPeople = numberOfPeople
             )
             
             bookingsCollection.document(bookingId).set(booking).await()

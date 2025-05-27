@@ -30,7 +30,7 @@ class ChatActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(false)
         
         binding.toolbar.setNavigationOnClickListener {
-            onBackPressed()
+            finish()
         }
         
         // Set guide name and status
@@ -42,7 +42,7 @@ class ChatActivity : AppCompatActivity() {
         binding.btnSend.setOnClickListener {
             val message = binding.etMessage.text.toString().trim()
             if (message.isNotEmpty()) {
-                sendMessage(message)
+                sendMessage()
                 binding.etMessage.text?.clear()
             }
         }
@@ -60,7 +60,7 @@ class ChatActivity : AppCompatActivity() {
         // binding.rvMessages.adapter = MessagesAdapter(messages)
     }
     
-    private fun sendMessage(text: String) {
+    private fun sendMessage() {
         // In a real app, this would send to repository
         // For now, just add to the UI
         // val message = Message(text, true, System.currentTimeMillis())

@@ -2,17 +2,16 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/guideSearchCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
+    app:cardCornerRadius="8dp"
     app:cardElevation="2dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp">
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/ivGuidePhoto"
@@ -22,15 +21,15 @@
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_person" />
+            tools:src="@drawable/placeholder_guide" />
 
         <TextView
             android:id="@+id/tvGuideName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="16dp"
             android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivGuidePhoto"
             app:layout_constraintTop_toTopOf="parent"
@@ -40,13 +39,9 @@
             android:id="@+id/tvLocation"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
-            android:layout_marginEnd="8dp"
-            android:drawablePadding="4dp"
-            android:gravity="center_vertical"
-            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
-            app:drawableStartCompat="@drawable/ic_location"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/ivGuidePhoto"
             app:layout_constraintTop_toBottomOf="@+id/tvGuideName"
@@ -54,10 +49,10 @@
 
         <RatingBar
             android:id="@+id/ratingBar"
-            style="?attr/ratingBarStyleSmall"
+            style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="4dp"
             android:isIndicator="true"
             android:numStars="5"
@@ -70,63 +65,37 @@
             android:id="@+id/tvRating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="8dp"
             android:textAppearance="@style/TextAppearance.Material3.BodySmall"
             app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
             app:layout_constraintStart_toEndOf="@+id/ratingBar"
             app:layout_constraintTop_toTopOf="@+id/ratingBar"
-            tools:text="4.5 (28)" />
+            tools:text="4.5" />
+
+        <TextView
+            android:id="@+id/tvLanguages"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="@color/gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ivGuidePhoto"
+            app:layout_constraintTop_toBottomOf="@+id/ratingBar"
+            tools:text="Speaks: English, Spanish" />
 
         <TextView
             android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
-            android:textColor="@color/primary"
-            app:layout_constraintBottom_toBottomOf="@+id/ratingBar"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:text="$50/hr" />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chipGroupLanguages"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:chipSpacingHorizontal="4dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ivGuidePhoto">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipEnglish"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/english"
-                android:textSize="12sp"
-                app:chipMinHeight="28dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipSpanish"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/spanish"
-                android:textSize="12sp"
-                app:chipMinHeight="28dp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipHistory"
-                style="@style/Widget.Material3.Chip.Assist"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/history"
-                android:textSize="12sp"
-                app:chipBackgroundColor="@color/secondary_light"
-                app:chipMinHeight="28dp" />
-
-        </com.google.android.material.chip.ChipGroup>
+            app:layout_constraintTop_toBottomOf="@+id/tvLanguages"
+            tools:text="$50/hour" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView> 

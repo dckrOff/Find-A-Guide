@@ -39,7 +39,7 @@ interface BookingRepository {
         duration: Int,
         price: Int,
         notes: String? = null,
-        location: String? = null
+        numberOfPeople: Int
     ): String?
     
     /**

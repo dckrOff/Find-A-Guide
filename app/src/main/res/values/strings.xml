@@ -62,6 +62,17 @@
     <string name="upcoming">Upcoming</string>
     <string name="past">Past</string>
     <string name="no_bookings_yet">No bookings yet</string>
+    <string name="booking_duration">%d hour(s)</string>
+    <string name="price_value">$%d</string>
+    <string name="price_per_hour">$%d/hour</string>
+    <string name="speaks">Speaks: %s</string>
+    <string name="available_guides_count">%d guides available</string>
+    
+    <!-- Booking Statuses -->
+    <string name="status_pending">Pending</string>
+    <string name="status_confirmed">Confirmed</string>
+    <string name="status_completed">Completed</string>
+    <string name="status_cancelled">Cancelled</string>
     
     <!-- Profile -->
     <string name="profile">Profile</string>

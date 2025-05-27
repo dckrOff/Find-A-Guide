@@ -67,7 +67,7 @@ class BookingViewModel : ViewModel() {
         duration: Int,
         price: Int,
         notes: String? = null,
-        location: String? = null
+        numberOfPeople: Int = 1
     ) {
         _isLoading.value = true
         
@@ -80,7 +80,7 @@ class BookingViewModel : ViewModel() {
                     duration = duration,
                     price = price,
                     notes = notes,
-                    location = location
+                    numberOfPeople = numberOfPeople
                 )
                 
                 if (bookingId != null) {

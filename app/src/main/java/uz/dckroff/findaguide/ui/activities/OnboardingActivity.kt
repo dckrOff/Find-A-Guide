@@ -25,7 +25,7 @@ class OnboardingActivity : AppCompatActivity() {
         val adapter = OnboardingAdapter()
         binding.viewPager.adapter = adapter
         
-        binding.dotsIndicator.setViewPager2(binding.viewPager)
+        binding.dotsIndicator.attachTo(binding.viewPager)
         
         binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {

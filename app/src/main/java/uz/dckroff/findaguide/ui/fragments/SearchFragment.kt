@@ -52,7 +52,7 @@ class SearchFragment : Fragment() {
         arguments?.getString("location")?.let { location ->
             binding.etLocation.setText(location)
             searchGuides()
-        } else {
+        } ?: run {
             // Загружаем все гиды при первом открытии экрана
             viewModel.loadAllGuides()
         }
