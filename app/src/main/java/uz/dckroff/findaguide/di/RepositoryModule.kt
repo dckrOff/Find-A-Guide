@@ -55,4 +55,11 @@ object RepositoryModule {
     fun provideChatRepository(): ChatRepository {
         return FirebaseChatRepository()
     }
+    
+    /**
+     * Предоставляет репозиторий для работы с направлениями
+     */
+    fun provideDestinationRepository(): DestinationRepository {
+        return FirebaseDestinationRepository()
+    }
 } 

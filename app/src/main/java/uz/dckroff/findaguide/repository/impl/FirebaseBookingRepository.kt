@@ -7,12 +7,10 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import uz.dckroff.findaguide.model.Booking
 import uz.dckroff.findaguide.model.BookingStatus
 import uz.dckroff.findaguide.repository.BookingRepository
-import java.util.Date
 import java.util.UUID
 
 /**
@@ -27,30 +25,101 @@ class FirebaseBookingRepository : BookingRepository {
     private fun getCurrentUserId(): String? = auth.currentUser?.uid
     
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getUserBookings(): Flow<List<Booking>> = flow {
-        // Здесь будет реальная реализация с Firebase
-        // Для примера возвращаем пустой список
-        emit(emptyList())
+    override fun getUserBookings(): Flow<List<Booking>> = callbackFlow {
+        val userId = getCurrentUserId()
+        if (userId == null) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        
+        val subscription = bookingsCollection
+            .whereEqualTo("userId", userId)
+            .orderBy("date", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                
+                if (snapshot != null) {
+                    val bookings = snapshot.documents.mapNotNull { document ->
+                        document.toObject(Booking::class.java)
+                    }
+                    trySend(bookings)
+                }
+            }
+        
+        awaitClose { subscription.remove() }
     }
     
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getUpcomingBookings(): Flow<List<Booking>> = flow {
-        // Здесь будет реальная реализация с Firebase
-        // Для примера возвращаем тестовые данные
-        emit(generateSampleBookings(BookingStatus.CONFIRMED))
+    override fun getUpcomingBookings(): Flow<List<Booking>> = callbackFlow {
+        val userId = getCurrentUserId()
+        if (userId == null) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        
+        val subscription = bookingsCollection
+            .whereEqualTo("userId", userId)
+            .whereIn("status", listOf(BookingStatus.PENDING.name, BookingStatus.CONFIRMED.name))
+            .orderBy("date", Query.Direction.ASCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                
+                if (snapshot != null) {
+                    val bookings = snapshot.documents.mapNotNull { document ->
+                        document.toObject(Booking::class.java)
+                    }
+                    trySend(bookings)
+                }
+            }
+        
+        awaitClose { subscription.remove() }
     }
     
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getPastBookings(): Flow<List<Booking>> = flow {
-        // Здесь будет реальная реализация с Firebase
-        // Для примера возвращаем тестовые данные
-        emit(generateSampleBookings(BookingStatus.COMPLETED))
+    override fun getPastBookings(): Flow<List<Booking>> = callbackFlow {
+        val userId = getCurrentUserId()
+        if (userId == null) {
+            trySend(emptyList())
+            close()
+            return@callbackFlow
+        }
+        
+        val subscription = bookingsCollection
+            .whereEqualTo("userId", userId)
+            .whereIn("status", listOf(BookingStatus.COMPLETED.name, BookingStatus.CANCELLED.name))
+            .orderBy("date", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                
+                if (snapshot != null) {
+                    val bookings = snapshot.documents.mapNotNull { document ->
+                        document.toObject(Booking::class.java)
+                    }
+                    trySend(bookings)
+                }
+            }
+        
+        awaitClose { subscription.remove() }
     }
     
     override suspend fun getBookingById(bookingId: String): Booking? {
-        // Здесь будет реальная реализация с Firebase
-        // Для примера возвращаем null
-        return null
+        return try {
+            val document = bookingsCollection.document(bookingId).get().await()
+            document.toObject(Booking::class.java)
+        } catch (e: Exception) {
+            null
+        }
     }
     
     override suspend fun createBooking(
@@ -60,45 +129,53 @@ class FirebaseBookingRepository : BookingRepository {
         numberOfPeople: Int,
         notes: String
     ): Boolean {
-        // Здесь будет реальная реализация с Firebase
-        // Для примера возвращаем true (успешно)
-        return true
+        val userId = getCurrentUserId() ?: return false
+        
+        return try {
+            // Получаем данные о гиде
+            val guideDocument = firestore.collection("guides").document(guideId).get().await()
+            val guideName = guideDocument.getString("name") ?: ""
+            val guidePhoto = guideDocument.getString("photo") ?: ""
+            val price = guideDocument.getDouble("price") ?: 0.0
+            
+            // Создаем уникальный ID для бронирования
+            val bookingId = UUID.randomUUID().toString()
+            
+            // Создаем объект бронирования
+            val booking = hashMapOf(
+                "id" to bookingId,
+                "userId" to userId,
+                "guideId" to guideId,
+                "guideName" to guideName,
+                "guidePhoto" to guidePhoto,
+                "date" to date,
+                "time" to time,
+                "numberOfPeople" to numberOfPeople,
+                "status" to BookingStatus.PENDING.name,
+                "price" to price * numberOfPeople,
+                "notes" to notes
+            )
+            
+            // Сохраняем в Firestore
+            bookingsCollection.document(bookingId).set(booking).await()
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
     
     override suspend fun cancelBooking(bookingId: String): Boolean {
-        // Здесь будет реальная реализация с Firebase
-        // Для примера возвращаем true (успешно)
-        return true
+        return updateBookingStatus(bookingId, BookingStatus.CANCELLED)
     }
     
     override suspend fun updateBookingStatus(bookingId: String, status: BookingStatus): Boolean {
-        // Здесь будет реальная реализация с Firebase
-        // Для примера возвращаем true (успешно)
-        return true
-    }
-    
-    /**
-     * Генерирует тестовые данные для бронирований
-     */
-    private fun generateSampleBookings(status: BookingStatus): List<Booking> {
-        val bookings = mutableListOf<Booking>()
-        
-        // Создаем несколько тестовых бронирований
-        for (i in 1..3) {
-            val booking = Booking(
-                id = "booking_$i",
-                guideId = "guide_$i",
-                guideName = "Guide $i",
-                guidePhoto = "https://example.com/guide_$i.jpg",
-                date = "2023-06-${10 + i}",
-                time = "10:00",
-                numberOfPeople = 2,
-                status = status,
-                price = 50.0 * i
-            )
-            bookings.add(booking)
+        return try {
+            bookingsCollection.document(bookingId)
+                .update("status", status.name)
+                .await()
+            true
+        } catch (e: Exception) {
+            false
         }
-        
-        return bookings
     }
 } 

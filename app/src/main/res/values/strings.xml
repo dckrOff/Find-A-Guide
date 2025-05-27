@@ -3,13 +3,13 @@
     <string name="app_name">Find a Guide</string>
     <string name="app_tagline">Discover local guides for your journey</string>
     <string name="app_logo">App Logo</string>
-    
+
     <!-- Onboarding -->
     <string name="next">Next</string>
     <string name="skip">Skip</string>
     <string name="get_started">Get Started</string>
     <string name="onboarding_image">Onboarding Image</string>
-    
+
     <!-- Auth -->
     <string name="login">Login</string>
     <string name="register">Register</string>
@@ -20,7 +20,19 @@
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="or">OR</string>
     <string name="full_name">Full Name</string>
-    
+    <string name="reset_password">Reset Password</string>
+    <string name="reset_password_instructions">Enter your email address to receive a password reset link.</string>
+    <string name="default_web_client_id" translatable="false">773684865564-9i1r8f0v2f7rtdm6lk2v8e2rhtc3r2nh.apps.googleusercontent.com</string>
+
+    <!-- Validation -->
+    <string name="email_required">Email is required</string>
+    <string name="invalid_email">Invalid email format</string>
+    <string name="password_required">Password is required</string>
+    <string name="password_too_short">Password must be at least 6 characters</string>
+    <string name="confirm_password_required">Confirm password is required</string>
+    <string name="passwords_do_not_match">Passwords do not match</string>
+    <string name="name_required">Name is required</string>
+
     <!-- Home -->
     <string name="welcome_tourist">Welcome, Tourist!</string>
     <string name="find_perfect_guide">Find the perfect guide for your journey</string>
@@ -30,7 +42,7 @@
     <string name="featured_guides">Featured Guides</string>
     <string name="popular_destinations">Popular Destinations</string>
     <string name="home">Home</string>
-    
+
     <!-- Search -->
     <string name="search">Search</string>
     <string name="location">Location</string>
@@ -49,13 +61,13 @@
     <string name="search_results">Search Results</string>
     <string name="no_results_found">No results found</string>
     <string name="filter_guides">Filter Guides</string>
-    
+
     <!-- Map -->
     <string name="map">Map</string>
     <string name="guide_photo">Guide Photo</string>
     <string name="view_profile">View Profile</string>
     <string name="book_now">Book Now</string>
-    
+
     <!-- Bookings -->
     <string name="bookings">Bookings</string>
     <string name="my_bookings">My Bookings</string>
@@ -67,13 +79,13 @@
     <string name="price_per_hour">$%.2f/hour</string>
     <string name="speaks">Speaks: %s</string>
     <string name="available_guides_count">%d guides available</string>
-    
+
     <!-- Booking Statuses -->
     <string name="status_pending">Pending</string>
     <string name="status_confirmed">Confirmed</string>
     <string name="status_completed">Completed</string>
     <string name="status_cancelled">Cancelled</string>
-    
+
     <!-- Profile -->
     <string name="profile">Profile</string>
     <string name="my_profile">My Profile</string>
@@ -88,13 +100,13 @@
     <string name="dark_mode">Dark Mode</string>
     <string name="language">Language</string>
     <string name="logout">Logout</string>
-    
+
     <!-- Guide Details -->
     <string name="about">About</string>
     <string name="reviews">Reviews</string>
     <string name="see_all_reviews">See All Reviews</string>
     <string name="chat">Chat</string>
-    
+
     <!-- Booking -->
     <string name="booking_details">Booking Details</string>
     <string name="select_date_and_time">Select Date and Time</string>
@@ -105,7 +117,7 @@
     <string name="notes_hint">Any special requests or information for the guide</string>
     <string name="total">Total:</string>
     <string name="price_placeholder">$50</string>
-    
+
     <!-- Chat -->
     <string name="online">Online</string>
     <string name="offline">Offline</string>
@@ -113,11 +125,12 @@
     <string name="send">Send</string>
     <string name="attach">Attach</string>
     <string name="action_settings">Settings</string>
-    
+
     <!-- New strings -->
     <string name="booking_created_successfully">Booking created successfully</string>
     <string name="select_date">Select date</string>
     <string name="select_time">Select time</string>
     <string name="please_select_date">Please select a date</string>
     <string name="please_select_time">Please select a time</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>

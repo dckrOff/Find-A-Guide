@@ -1,5 +1,6 @@
 package uz.dckroff.findaguide.ui.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import uz.dckroff.findaguide.databinding.FragmentProfileBinding
+import uz.dckroff.findaguide.ui.activities.AuthActivity
 import uz.dckroff.findaguide.viewmodel.ProfileViewModel
 
 class ProfileFragment : Fragment() {
@@ -94,6 +96,9 @@ class ProfileFragment : Fragment() {
         viewModel.isLoggedOut.observe(viewLifecycleOwner) { isLoggedOut ->
             if (isLoggedOut) {
                 // Переход на экран авторизации
+                startActivity(Intent(requireContext(), AuthActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
                 activity?.finish()
             }
         }

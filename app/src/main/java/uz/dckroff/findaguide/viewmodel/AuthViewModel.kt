@@ -4,12 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import uz.dckroff.findaguide.repository.AuthRepository
 import uz.dckroff.findaguide.di.RepositoryModule
+import uz.dckroff.findaguide.repository.AuthRepository
+import uz.dckroff.findaguide.utils.FirebaseResult
 
 /**
  * ViewModel для экрана аутентификации
@@ -17,10 +17,6 @@ import uz.dckroff.findaguide.di.RepositoryModule
 class AuthViewModel : ViewModel() {
     
     private val authRepository: AuthRepository = RepositoryModule.provideAuthRepository()
-    
-    // LiveData для успешной аутентификации
-    private val _authSuccess = MutableLiveData<Boolean>()
-    val authSuccess: LiveData<Boolean> = _authSuccess
     
     // LiveData для статуса аутентификации
     private val _isAuthenticated = MutableLiveData<Boolean>()
@@ -34,34 +30,35 @@ class AuthViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
     
-    // LiveData для сброса пароля
-    private val _resetPasswordSuccess = MutableLiveData<Boolean>()
-    val resetPasswordSuccess: LiveData<Boolean> = _resetPasswordSuccess
+    // LiveData для успешной операции
+    private val _success = MutableLiveData<String>()
+    val success: LiveData<String> = _success
     
     init {
-        // Отслеживаем изменения статуса аутентификации
-        authRepository.getAuthState()
-            .onEach { isAuth ->
-                _isAuthenticated.value = isAuth
-            }
-            .catch { e ->
-                _error.value = e.message ?: "Authentication state error"
-            }
-            .launchIn(viewModelScope)
+        // Наблюдаем за состоянием аутентификации
+        observeAuthState()
     }
     
     /**
-     * Регистрация пользователя
+     * Наблюдаем за состоянием аутентификации
      */
-    fun register(email: String, password: String, name: String) {
+    private fun observeAuthState() {
+        authRepository.getAuthState().onEach { isAuthenticated ->
+            _isAuthenticated.value = isAuthenticated
+        }.launchIn(viewModelScope)
+    }
+    
+    /**
+     * Регистрация по email и паролю
+     */
+    fun registerWithEmail(email: String, password: String, name: String) {
         _isLoading.value = true
         
         viewModelScope.launch {
             try {
                 val userId = authRepository.registerWithEmail(email, password, name)
-                
                 if (userId != null) {
-                    _authSuccess.value = true
+                    _success.value = "Registration successful"
                 } else {
                     _error.value = "Registration failed"
                 }
@@ -74,17 +71,16 @@ class AuthViewModel : ViewModel() {
     }
     
     /**
-     * Вход пользователя
+     * Вход по email и паролю
      */
-    fun login(email: String, password: String) {
+    fun loginWithEmail(email: String, password: String) {
         _isLoading.value = true
         
         viewModelScope.launch {
             try {
                 val userId = authRepository.loginWithEmail(email, password)
-                
                 if (userId != null) {
-                    _authSuccess.value = true
+                    _success.value = "Login successful"
                 } else {
                     _error.value = "Login failed"
                 }
@@ -105,9 +101,8 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val userId = authRepository.loginWithGoogle(idToken)
-                
                 if (userId != null) {
-                    _authSuccess.value = true
+                    _success.value = "Google login successful"
                 } else {
                     _error.value = "Google login failed"
                 }
@@ -127,15 +122,14 @@ class AuthViewModel : ViewModel() {
         
         viewModelScope.launch {
             try {
-                val success = authRepository.resetPassword(email)
-                
-                _resetPasswordSuccess.value = success
-                
-                if (!success) {
-                    _error.value = "Failed to send reset password email"
+                val result = authRepository.resetPassword(email)
+                if (result) {
+                    _success.value = "Password reset email sent"
+                } else {
+                    _error.value = "Failed to send password reset email"
                 }
             } catch (e: Exception) {
-                _error.value = e.message ?: "Failed to send reset password email"
+                _error.value = e.message ?: "Failed to send password reset email"
             } finally {
                 _isLoading.value = false
             }
@@ -143,9 +137,24 @@ class AuthViewModel : ViewModel() {
     }
     
     /**
-     * Проверить статус аутентификации
+     * Выход из аккаунта
      */
-    fun checkAuthStatus(): Boolean {
-        return authRepository.getCurrentUserId() != null
+    fun logout() {
+        _isLoading.value = true
+        
+        viewModelScope.launch {
+            try {
+                val result = authRepository.logout()
+                if (result) {
+                    _success.value = "Logout successful"
+                } else {
+                    _error.value = "Logout failed"
+                }
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Logout failed"
+            } finally {
+                _isLoading.value = false
+            }
+        }
     }
 } 

@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     // Раскомментируем после настройки Google Services JSON
     id("com.google.gms.google-services")
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
@@ -64,6 +65,9 @@ dependencies {
 
     // Google Maps
     implementation("com.google.android.gms:play-services-maps:18.2.0")
+    
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     implementation("com.tbuonomo:dotsindicator:5.1.0")
 

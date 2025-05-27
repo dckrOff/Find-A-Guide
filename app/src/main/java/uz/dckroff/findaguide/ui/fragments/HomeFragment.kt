@@ -90,18 +90,7 @@ class HomeFragment : Fragment() {
 
         // Наблюдаем за списком популярных направлений
         viewModel.popularDestinations.observe(viewLifecycleOwner) { destinations ->
-            // Преобразуем строки в объекты Destination
-            val destinationList = destinations.mapIndexed { index, name ->
-                Destination(
-                    id = "dest_$index",
-                    name = name,
-                    description = "Popular destination",
-                    photo = "https://example.com/destination_$index.jpg",
-                    rating = 4.5f,
-                    guidesCount = (10..50).random()
-                )
-            }
-            destinationAdapter.submitList(destinationList)
+            destinationAdapter.submitList(destinations)
         }
 
         // Наблюдаем за статусом загрузки
