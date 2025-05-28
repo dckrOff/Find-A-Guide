@@ -14,6 +14,7 @@ import uz.dckroff.findaguide.R
 import uz.dckroff.findaguide.databinding.FragmentHomeBinding
 import uz.dckroff.findaguide.model.Destination
 import uz.dckroff.findaguide.model.Guide
+import uz.dckroff.findaguide.ui.activities.MainActivity
 import uz.dckroff.findaguide.ui.adapters.DestinationAdapter
 import uz.dckroff.findaguide.ui.adapters.GuideAdapter
 import uz.dckroff.findaguide.viewmodel.HomeViewModel
@@ -73,13 +74,17 @@ class HomeFragment : Fragment() {
         binding.btnSearch.setOnClickListener {
             val location = binding.etLocation.text.toString().trim()
             if (location.isNotEmpty()) {
-                // Если введено местоположение, используем его для поиска
-                navigateToSearchWithLocation(location)
+                val bundle = Bundle().apply {
+                    putString("location", location)
+                }
+                // Навигация с передачей аргумента
+                findNavController().navigate(R.id.searchFragment, bundle)
             } else {
-                // Если местоположение не введено, переходим на экран поиска
-                findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
+                // Вместо navigate(action), переключаемся на item bottomNavigation
+                (activity as? MainActivity)?.switchToTab(R.id.searchFragment)
             }
         }
+
     }
 
     private fun observeViewModel() {

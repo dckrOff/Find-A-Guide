@@ -1,6 +1,7 @@
 package uz.dckroff.findaguide.ui.activities
 
 import android.os.Bundle
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -49,7 +50,12 @@ class MainActivity : AppCompatActivity() {
         // Connect bottom navigation with navigation controller
         binding.bottomNavigation.setupWithNavController(navController)
     }
-    
+
+    fun switchToTab(@IdRes tabId: Int) {
+        binding.bottomNavigation.selectedItemId = tabId
+    }
+
+
     override fun onSupportNavigateUp(): Boolean {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
