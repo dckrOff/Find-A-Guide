@@ -1,6 +1,10 @@
 package uz.dckroff.findaguide.ui.activities
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -21,9 +25,13 @@ class BookingActivity : AppCompatActivity() {
     
     private val viewModel: BookingViewModel by viewModels()
     
+    // Форматы даты и времени
+    private val dateFormat = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    
     // Выбранные дата и время
     private var selectedDate: Date = Calendar.getInstance().apply { add(Calendar.DAY_OF_YEAR, 1) }.time
-    private var selectedTime: String = "10:00 AM"
+    private var selectedTime: String = "10:00"
     private var selectedDuration: Int = 2
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +45,7 @@ class BookingActivity : AppCompatActivity() {
         setupToolbar()
         setupDateTimePickers()
         setupBookingButton()
+        setupNumberOfPeopleInput()
         observeViewModel()
         
         // Загружаем данные о гиде
@@ -54,17 +63,32 @@ class BookingActivity : AppCompatActivity() {
     }
     
     private fun setupDateTimePickers() {
+        // Устанавливаем начальные значения
+        binding.btnDate.text = dateFormat.format(selectedDate)
+        binding.btnTime.text = selectedTime
+        
         // Setup date picker
         binding.btnDate.setOnClickListener {
-            // Show date picker dialog
             showDatePickerDialog()
         }
         
         // Setup time picker
         binding.btnTime.setOnClickListener {
-            // Show time picker dialog
             showTimePickerDialog()
         }
+    }
+    
+    private fun setupNumberOfPeopleInput() {
+        // Обновляем общую стоимость при изменении количества людей
+        binding.etNumberOfPeople.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            
+            override fun afterTextChanged(s: Editable?) {
+                updateTotalPrice()
+            }
+        })
     }
     
     private fun setupBookingButton() {
@@ -82,7 +106,7 @@ class BookingActivity : AppCompatActivity() {
         viewModel.guide.observe(this) { guide ->
             binding.tvGuideName.text = guide.name
             binding.tvLocation.text = guide.location
-            binding.tvPrice.text = "$${guide.price}/hour"
+            binding.tvPrice.text = String.format("$%.2f/hour", guide.price)
             
             // Загружаем фото гида
             Glide.with(this)
@@ -117,13 +141,53 @@ class BookingActivity : AppCompatActivity() {
     }
     
     private fun showDatePickerDialog() {
-        // Placeholder for date picker dialog
-        // This would be implemented in later stages
+        val calendar = Calendar.getInstance().apply {
+            time = selectedDate
+        }
+        
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+        
+        val minDate = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, 1)  // Минимальная дата - завтрашний день
+        }
+        
+        val dialog = DatePickerDialog(
+            this,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                calendar.set(selectedYear, selectedMonth, selectedDay)
+                selectedDate = calendar.time
+                binding.btnDate.text = dateFormat.format(selectedDate)
+            },
+            year,
+            month,
+            day
+        )
+        
+        dialog.datePicker.minDate = minDate.timeInMillis
+        dialog.show()
     }
     
     private fun showTimePickerDialog() {
-        // Placeholder for time picker dialog
-        // This would be implemented in later stages
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        
+        val dialog = TimePickerDialog(
+            this,
+            { _, selectedHour, selectedMinute ->
+                calendar.set(Calendar.HOUR_OF_DAY, selectedHour)
+                calendar.set(Calendar.MINUTE, selectedMinute)
+                selectedTime = timeFormat.format(calendar.time)
+                binding.btnTime.text = selectedTime
+            },
+            hour,
+            minute,
+            true  // 24-часовой формат
+        )
+        
+        dialog.show()
     }
     
     private fun validateInputs(): Boolean {
@@ -135,6 +199,12 @@ class BookingActivity : AppCompatActivity() {
         
         if (binding.btnTime.text.toString() == getString(R.string.select_time)) {
             Toast.makeText(this, getString(R.string.please_select_time), Toast.LENGTH_SHORT).show()
+            return false
+        }
+        
+        val numberOfPeople = binding.etNumberOfPeople.text.toString().toIntOrNull()
+        if (numberOfPeople == null || numberOfPeople <= 0) {
+            Toast.makeText(this, "Please enter a valid number of people", Toast.LENGTH_SHORT).show()
             return false
         }
         
@@ -159,6 +229,6 @@ class BookingActivity : AppCompatActivity() {
         val price = viewModel.guide.value?.price ?: 0.0
         
         val totalPrice = numberOfPeople * price
-        binding.tvTotalPrice.text = "$${String.format("%.2f", totalPrice)}"
+        binding.tvTotalPrice.text = String.format("$%.2f", totalPrice)
     }
 } 

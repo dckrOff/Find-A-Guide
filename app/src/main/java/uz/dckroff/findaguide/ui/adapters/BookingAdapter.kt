@@ -2,6 +2,7 @@ package uz.dckroff.findaguide.ui.adapters
 
 import android.content.res.ColorStateList
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -30,9 +31,9 @@ class BookingAdapter(
         holder.bind(getItem(position))
     }
 
-    inner class BookingViewHolder(private val binding: ItemBookingBinding) : 
+    inner class BookingViewHolder(private val binding: ItemBookingBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        
+
         init {
             binding.root.setOnClickListener {
                 val position = bindingAdapterPosition
@@ -40,7 +41,7 @@ class BookingAdapter(
                     onBookingClick(getItem(position))
                 }
             }
-            
+
             binding.btnCancel.setOnClickListener {
                 val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
@@ -48,40 +49,43 @@ class BookingAdapter(
                 }
             }
         }
-        
+
         fun bind(booking: Booking) {
             binding.tvBookingDate.text = booking.date
             binding.tvBookingTime.text = booking.time
             binding.tvBookingDuration.text = "${booking.numberOfPeople} person(s)"
             binding.tvBookingPrice.text = "$${booking.price}"
-            
+
             // Устанавливаем статус бронирования и его цвет
             val statusText: String
             val statusColor: Int
-            
+
             when (booking.status) {
                 BookingStatus.PENDING -> {
                     statusText = binding.root.context.getString(R.string.status_pending)
                     statusColor = R.color.status_pending
                     binding.btnCancel.isEnabled = true
                 }
+
                 BookingStatus.CONFIRMED -> {
                     statusText = binding.root.context.getString(R.string.status_confirmed)
                     statusColor = R.color.status_confirmed
                     binding.btnCancel.isEnabled = true
                 }
+
                 BookingStatus.COMPLETED -> {
                     statusText = binding.root.context.getString(R.string.status_completed)
                     statusColor = R.color.status_completed
-                    binding.btnCancel.isEnabled = false
+                    binding.btnCancel.visibility = View.GONE
                 }
+
                 BookingStatus.CANCELLED -> {
                     statusText = binding.root.context.getString(R.string.status_cancelled)
                     statusColor = R.color.status_cancelled
-                    binding.btnCancel.isEnabled = false
+                    binding.btnCancel.visibility = View.GONE
                 }
             }
-            
+
             binding.chipStatus.text = statusText
             binding.chipStatus.chipBackgroundColor = ColorStateList.valueOf(
                 ContextCompat.getColor(binding.root.context, statusColor)

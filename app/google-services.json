@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "773684865564",
-    "project_id": "find-a-guide-9fe35",
-    "storage_bucket": "find-a-guide-9fe35.firebasestorage.app"
+    "project_number": "187807926248",
+    "project_id": "find-a-guide2",
+    "storage_bucket": "find-a-guide2.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:773684865564:android:dec7cb904654bc3de20dd9",
+        "mobilesdk_app_id": "1:187807926248:android:13a45790347d41b1bd065d",
         "android_client_info": {
           "package_name": "uz.dckroff.findaguide"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "187807926248-7atgemci2c77s4nm8jmmmkke7su04lam.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCbFpwsINC86g_aWVx8eTJdxzz9e6hxlLA"
+          "current_key": "AIzaSyAlGWfPC-cwa3cMh0bpYZ30-DULNzxg7Qo"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "187807926248-7atgemci2c77s4nm8jmmmkke7su04lam.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

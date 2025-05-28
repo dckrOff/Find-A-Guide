@@ -36,6 +36,10 @@ class BookingsViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
     
+    // LiveData для сообщений об успешных действиях
+    private val _successMessage = MutableLiveData<String>()
+    val successMessage: LiveData<String> = _successMessage
+    
     /**
      * Загрузить все бронирования пользователя
      */
@@ -75,10 +79,26 @@ class BookingsViewModel : ViewModel() {
             try {
                 val success = bookingRepository.cancelBooking(bookingId)
                 
-                if (!success) {
+                if (success) {
+                    _successMessage.value = "Booking cancelled successfully"
+                    
+                    // Немедленно обновляем списки бронирований локально
+                    val currentUpcoming = _upcomingBookings.value ?: emptyList()
+                    val cancelledBooking = currentUpcoming.find { it.id == bookingId }
+                    
+                    if (cancelledBooking != null) {
+                        // Удаляем из списка предстоящих
+                        val updatedUpcoming = currentUpcoming.filter { it.id != bookingId }
+                        _upcomingBookings.value = updatedUpcoming
+                        
+                        // Добавляем в список прошедших с обновленным статусом
+                        val updatedBooking = cancelledBooking.copy(status = BookingStatus.CANCELLED)
+                        val currentPast = _pastBookings.value ?: emptyList()
+                        _pastBookings.value = listOf(updatedBooking) + currentPast
+                    }
+                } else {
                     _error.value = "Failed to cancel booking"
                 }
-                // При успешной отмене, обновленные данные придут через Flow
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to cancel booking"
             } finally {
@@ -97,10 +117,34 @@ class BookingsViewModel : ViewModel() {
             try {
                 val success = bookingRepository.updateBookingStatus(bookingId, status)
                 
-                if (!success) {
+                if (success) {
+                    when (status) {
+                        BookingStatus.CONFIRMED -> _successMessage.value = "Booking confirmed"
+                        BookingStatus.COMPLETED -> _successMessage.value = "Booking marked as completed"
+                        BookingStatus.CANCELLED -> _successMessage.value = "Booking cancelled"
+                        else -> {}
+                    }
+                    
+                    // Если статус изменился на COMPLETED или CANCELLED, 
+                    // обновляем списки локально
+                    if (status == BookingStatus.COMPLETED || status == BookingStatus.CANCELLED) {
+                        val currentUpcoming = _upcomingBookings.value ?: emptyList()
+                        val bookingToUpdate = currentUpcoming.find { it.id == bookingId }
+                        
+                        if (bookingToUpdate != null) {
+                            // Удаляем из списка предстоящих
+                            val updatedUpcoming = currentUpcoming.filter { it.id != bookingId }
+                            _upcomingBookings.value = updatedUpcoming
+                            
+                            // Добавляем в список прошедших с обновленным статусом
+                            val updatedBooking = bookingToUpdate.copy(status = status)
+                            val currentPast = _pastBookings.value ?: emptyList()
+                            _pastBookings.value = listOf(updatedBooking) + currentPast
+                        }
+                    }
+                } else {
                     _error.value = "Failed to update booking status"
                 }
-                // При успешном обновлении, новые данные придут через Flow
             } catch (e: Exception) {
                 _error.value = e.message ?: "Failed to update booking status"
             } finally {
