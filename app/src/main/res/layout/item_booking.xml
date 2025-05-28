@@ -43,6 +43,37 @@
             app:layout_constraintTop_toBottomOf="@+id/tvBookingTime"
             tools:text="2 hour(s)" />
 
+        <LinearLayout
+            android:id="@+id/ratingContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvBookingDuration"
+            tools:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/your_rating"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:stepSize="0.5"
+                tools:rating="4.5" />
+
+        </LinearLayout>
+
         <com.google.android.material.chip.Chip
             android:id="@+id/chipStatus"
             android:layout_width="wrap_content"

@@ -153,7 +153,8 @@ class FirebaseBookingRepository : BookingRepository {
                 "numberOfPeople" to numberOfPeople,
                 "status" to BookingStatus.PENDING.name,
                 "price" to price * numberOfPeople,
-                "notes" to notes
+                "notes" to notes,
+                "userRating" to 0f
             )
             
             // Сохраняем в Firestore
@@ -172,6 +173,17 @@ class FirebaseBookingRepository : BookingRepository {
         return try {
             bookingsCollection.document(bookingId)
                 .update("status", status.name)
+                .await()
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+    
+    override suspend fun updateBookingRating(bookingId: String, rating: Float): Boolean {
+        return try {
+            bookingsCollection.document(bookingId)
+                .update("userRating", rating)
                 .await()
             true
         } catch (e: Exception) {

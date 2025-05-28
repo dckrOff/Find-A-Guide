@@ -1,8 +1,10 @@
 package uz.dckroff.findaguide.ui.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +22,17 @@ class BookingDetailsActivity : AppCompatActivity() {
     private var bookingId: String = ""
     
     private val viewModel: BookingDetailsViewModel by viewModels()
+    
+    // Регистрируем ActivityResultLauncher для получения результата из ReviewActivity
+    private val reviewActivityLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == RESULT_OK) {
+            // Если отзыв успешно оставлен, обновляем детали бронирования
+            viewModel.loadBookingDetails(bookingId)
+            Toast.makeText(this, R.string.review_submitted_successfully, Toast.LENGTH_SHORT).show()
+        }
+    }
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +78,12 @@ class BookingDetailsActivity : AppCompatActivity() {
                 navigateToChat(guideId)
             }
         }
+        
+        // Кнопка для оставления отзыва
+        binding.btnReviewGuide.setOnClickListener {
+            val booking = viewModel.booking.value ?: return@setOnClickListener
+            navigateToReview(booking.guideId, booking.guideName, booking.guidePhoto)
+        }
     }
     
     private fun observeViewModel() {
@@ -94,21 +113,38 @@ class BookingDetailsActivity : AppCompatActivity() {
                     statusText = getString(R.string.status_pending)
                     statusColor = R.color.status_pending
                     binding.btnCancel.visibility = View.VISIBLE
+                    binding.btnReviewGuide.visibility = View.GONE
+                    binding.ratingContainer.visibility = View.GONE
                 }
                 BookingStatus.CONFIRMED -> {
                     statusText = getString(R.string.status_confirmed)
                     statusColor = R.color.status_confirmed
                     binding.btnCancel.visibility = View.VISIBLE
+                    binding.btnReviewGuide.visibility = View.GONE
+                    binding.ratingContainer.visibility = View.GONE
                 }
                 BookingStatus.COMPLETED -> {
                     statusText = getString(R.string.status_completed)
                     statusColor = R.color.status_completed
                     binding.btnCancel.visibility = View.GONE
+                    
+                    // Проверяем, оставлял ли пользователь уже отзыв
+                    viewModel.checkIfReviewExists(bookingId)
+                    
+                    // Если пользователь уже оставил отзыв, показываем его рейтинг
+                    if (booking.userRating > 0) {
+                        binding.ratingContainer.visibility = View.VISIBLE
+                        binding.rbUserRating.rating = booking.userRating
+                    } else {
+                        binding.ratingContainer.visibility = View.GONE
+                    }
                 }
                 BookingStatus.CANCELLED -> {
                     statusText = getString(R.string.status_cancelled)
                     statusColor = R.color.status_cancelled
                     binding.btnCancel.visibility = View.GONE
+                    binding.btnReviewGuide.visibility = View.GONE
+                    binding.ratingContainer.visibility = View.GONE
                 }
             }
             
@@ -121,6 +157,25 @@ class BookingDetailsActivity : AppCompatActivity() {
                 binding.notesContainer.isVisible = true
             } else {
                 binding.notesContainer.isVisible = false
+            }
+        }
+        
+        // Наблюдаем за статусом наличия отзыва
+        viewModel.hasReview.observe(this) { hasReview ->
+            val booking = viewModel.booking.value
+            if (booking?.status == BookingStatus.COMPLETED) {
+                binding.btnReviewGuide.isVisible = !hasReview
+                
+                // Если есть отзыв, показываем контейнер с рейтингом
+                if (hasReview && booking.userRating > 0) {
+                    binding.ratingContainer.visibility = View.VISIBLE
+                    binding.rbUserRating.rating = booking.userRating
+                } else {
+                    binding.ratingContainer.visibility = View.GONE
+                }
+            } else {
+                binding.btnReviewGuide.isVisible = false
+                binding.ratingContainer.visibility = View.GONE
             }
         }
         
@@ -164,9 +219,19 @@ class BookingDetailsActivity : AppCompatActivity() {
     }
     
     private fun navigateToChat(guideId: String) {
-        val intent = android.content.Intent(this, ChatActivity::class.java).apply {
+        val intent = Intent(this, ChatActivity::class.java).apply {
             putExtra("guideId", guideId)
         }
         startActivity(intent)
+    }
+    
+    private fun navigateToReview(guideId: String, guideName: String, guidePhoto: String) {
+        val intent = Intent(this, ReviewActivity::class.java).apply {
+            putExtra("bookingId", bookingId)
+            putExtra("guideId", guideId)
+            putExtra("guideName", guideName)
+            putExtra("guidePhoto", guidePhoto)
+        }
+        reviewActivityLauncher.launch(intent)
     }
 } 

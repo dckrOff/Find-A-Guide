@@ -65,24 +65,37 @@ class BookingAdapter(
                     statusText = binding.root.context.getString(R.string.status_pending)
                     statusColor = R.color.status_pending
                     binding.btnCancel.isEnabled = true
+                    binding.btnCancel.visibility = View.VISIBLE
+                    binding.ratingContainer.visibility = View.GONE
                 }
 
                 BookingStatus.CONFIRMED -> {
                     statusText = binding.root.context.getString(R.string.status_confirmed)
                     statusColor = R.color.status_confirmed
                     binding.btnCancel.isEnabled = true
+                    binding.btnCancel.visibility = View.VISIBLE
+                    binding.ratingContainer.visibility = View.GONE
                 }
 
                 BookingStatus.COMPLETED -> {
                     statusText = binding.root.context.getString(R.string.status_completed)
                     statusColor = R.color.status_completed
                     binding.btnCancel.visibility = View.GONE
+                    
+                    // Показываем рейтинг, если пользователь оставил отзыв
+                    if (booking.userRating > 0) {
+                        binding.ratingContainer.visibility = View.VISIBLE
+                        binding.ratingBar.rating = booking.userRating
+                    } else {
+                        binding.ratingContainer.visibility = View.GONE
+                    }
                 }
 
                 BookingStatus.CANCELLED -> {
                     statusText = binding.root.context.getString(R.string.status_cancelled)
                     statusColor = R.color.status_cancelled
                     binding.btnCancel.visibility = View.GONE
+                    binding.ratingContainer.visibility = View.GONE
                 }
             }
 

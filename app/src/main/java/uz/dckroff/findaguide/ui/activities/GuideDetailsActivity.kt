@@ -2,13 +2,16 @@ package uz.dckroff.findaguide.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import uz.dckroff.findaguide.R
 import uz.dckroff.findaguide.databinding.ActivityGuideDetailsBinding
+import uz.dckroff.findaguide.ui.adapters.ReviewAdapter
 import uz.dckroff.findaguide.viewmodel.GuideDetailsViewModel
 
 class GuideDetailsActivity : AppCompatActivity() {
@@ -17,6 +20,7 @@ class GuideDetailsActivity : AppCompatActivity() {
     private var guideId: String = ""
     
     private val viewModel: GuideDetailsViewModel by viewModels()
+    private val reviewAdapter = ReviewAdapter()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +31,7 @@ class GuideDetailsActivity : AppCompatActivity() {
         guideId = intent.getStringExtra("guideId") ?: ""
         
         setupToolbar()
+        setupRecyclerView()
         setupButtons()
         observeViewModel()
         
@@ -44,6 +49,14 @@ class GuideDetailsActivity : AppCompatActivity() {
         }
     }
     
+    private fun setupRecyclerView() {
+        binding.rvReviews.apply {
+            layoutManager = LinearLayoutManager(this@GuideDetailsActivity)
+            adapter = reviewAdapter
+            isNestedScrollingEnabled = false
+        }
+    }
+    
     private fun setupButtons() {
         // Setup book now button
         binding.btnBookNow.setOnClickListener {
@@ -53,6 +66,12 @@ class GuideDetailsActivity : AppCompatActivity() {
         // Setup chat button
         binding.btnChat.setOnClickListener {
             navigateToChat()
+        }
+        
+        // Setup see all reviews button
+        binding.tvSeeAllReviews.setOnClickListener {
+            // В будущем здесь может быть переход на экран со всеми отзывами
+            Toast.makeText(this, "Showing all reviews", Toast.LENGTH_SHORT).show()
         }
     }
     
@@ -89,7 +108,24 @@ class GuideDetailsActivity : AppCompatActivity() {
         
         // Наблюдаем за отзывами
         viewModel.reviews.observe(this) { reviews ->
-            // В реальном приложении здесь бы обновлялся адаптер с отзывами
+            reviewAdapter.submitList(reviews)
+            
+            // Обновляем счетчик отзывов
+            binding.tvReviewCount.text = "(${reviews.size})"
+            
+            // Показываем или скрываем блок с отзывами в зависимости от их наличия
+            if (reviews.isEmpty()) {
+                binding.tvNoReviews.visibility = View.VISIBLE
+                binding.rvReviews.visibility = View.GONE
+                binding.tvSeeAllReviews.visibility = View.GONE
+            } else {
+                binding.tvNoReviews.visibility = View.GONE
+                binding.rvReviews.visibility = View.VISIBLE
+                binding.tvSeeAllReviews.visibility = if (reviews.size > 3) View.VISIBLE else View.GONE
+                
+                // Ограничиваем количество отзывов на главном экране
+                reviewAdapter.submitList(reviews.take(3))
+            }
         }
         
         // Наблюдаем за статусом загрузки

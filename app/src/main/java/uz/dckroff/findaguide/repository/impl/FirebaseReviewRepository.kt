@@ -128,6 +128,12 @@ class FirebaseReviewRepository : ReviewRepository {
                 )
                 .await()
             
+            // Обновляем рейтинг в бронировании
+            firestore.collection("bookings")
+                .document(review.bookingId)
+                .update("userRating", rating)
+                .await()
+            
             // Обновляем средний рейтинг гида
             updateGuideRating(review.guideId)
             
@@ -145,6 +151,12 @@ class FirebaseReviewRepository : ReviewRepository {
             
             // Удаляем отзыв
             reviewsCollection.document(reviewId).delete().await()
+            
+            // Сбрасываем рейтинг в бронировании
+            firestore.collection("bookings")
+                .document(review.bookingId)
+                .update("userRating", 0f)
+                .await()
             
             // Обновляем средний рейтинг гида
             updateGuideRating(review.guideId)

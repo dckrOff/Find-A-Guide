@@ -49,4 +49,9 @@ interface BookingRepository {
      * Обновить статус бронирования
      */
     suspend fun updateBookingStatus(bookingId: String, status: BookingStatus): Boolean
+    
+    /**
+     * Обновить рейтинг бронирования
+     */
+    suspend fun updateBookingRating(bookingId: String, rating: Float): Boolean
 } 

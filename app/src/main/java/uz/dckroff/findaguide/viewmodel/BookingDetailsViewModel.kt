@@ -4,10 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import uz.dckroff.findaguide.model.Booking
 import uz.dckroff.findaguide.model.BookingStatus
 import uz.dckroff.findaguide.repository.BookingRepository
+import uz.dckroff.findaguide.repository.ReviewRepository
 import uz.dckroff.findaguide.di.RepositoryModule
 
 /**
@@ -16,6 +18,7 @@ import uz.dckroff.findaguide.di.RepositoryModule
 class BookingDetailsViewModel : ViewModel() {
     
     private val bookingRepository: BookingRepository = RepositoryModule.provideBookingRepository()
+    private val reviewRepository: ReviewRepository = RepositoryModule.provideReviewRepository()
     
     // LiveData для данных бронирования
     private val _booking = MutableLiveData<Booking>()
@@ -33,6 +36,10 @@ class BookingDetailsViewModel : ViewModel() {
     private val _successMessage = MutableLiveData<String>()
     val successMessage: LiveData<String> = _successMessage
     
+    // LiveData для статуса наличия отзыва
+    private val _hasReview = MutableLiveData<Boolean>()
+    val hasReview: LiveData<Boolean> = _hasReview
+    
     /**
      * Загрузить детали бронирования
      */
@@ -43,7 +50,23 @@ class BookingDetailsViewModel : ViewModel() {
             try {
                 val bookingDetails = bookingRepository.getBookingById(bookingId)
                 if (bookingDetails != null) {
-                    _booking.value = bookingDetails
+                    // Если бронирование завершено, проверяем наличие отзыва и получаем рейтинг
+                    if (bookingDetails.status == BookingStatus.COMPLETED) {
+                        val userReviews = reviewRepository.getUserReviews().firstOrNull() ?: emptyList()
+                        val reviewForBooking = userReviews.find { it.bookingId == bookingId }
+                        
+                        if (reviewForBooking != null) {
+                            // Если отзыв существует, обновляем booking с рейтингом пользователя
+                            _booking.value = bookingDetails.copy(userRating = reviewForBooking.rating)
+                            _hasReview.value = true
+                        } else {
+                            _booking.value = bookingDetails
+                            _hasReview.value = false
+                        }
+                    } else {
+                        _booking.value = bookingDetails
+                        _hasReview.value = false
+                    }
                 } else {
                     _error.value = "Booking not found"
                 }
@@ -79,6 +102,35 @@ class BookingDetailsViewModel : ViewModel() {
                 _error.value = e.message ?: "Failed to cancel booking"
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+    
+    /**
+     * Проверяет, оставлял ли пользователь отзыв для данного бронирования
+     */
+    fun checkIfReviewExists(bookingId: String) {
+        viewModelScope.launch {
+            try {
+                val guideId = _booking.value?.guideId ?: return@launch
+                
+                // Получаем все отзывы пользователя
+                val userReviews = reviewRepository.getUserReviews().firstOrNull() ?: emptyList()
+                
+                // Проверяем, есть ли отзыв для данного бронирования
+                val hasReviewForBooking = userReviews.any { it.bookingId == bookingId }
+                _hasReview.value = hasReviewForBooking
+                
+                // Если есть отзыв, обновляем данные бронирования с рейтингом
+                if (hasReviewForBooking) {
+                    val reviewForBooking = userReviews.find { it.bookingId == bookingId }
+                    if (reviewForBooking != null && _booking.value != null) {
+                        _booking.value = _booking.value!!.copy(userRating = reviewForBooking.rating)
+                    }
+                }
+            } catch (e: Exception) {
+                // В случае ошибки предполагаем, что отзыва нет
+                _hasReview.value = false
             }
         }
     }

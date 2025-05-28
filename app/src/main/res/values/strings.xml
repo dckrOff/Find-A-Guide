@@ -143,4 +143,25 @@
     <string name="confirm_cancel_booking">Are you sure you want to cancel this booking?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+
+    <!-- Review System -->
+    <string name="rate_guide">Rate Guide</string>
+    <string name="rate_your_experience">Rate your experience</string>
+    <string name="how_was_your_experience">How was your experience with this guide?</string>
+    <string name="share_your_thoughts">Share your thoughts</string>
+    <string name="write_your_review_hint">Write your review here (optional)</string>
+    <string name="submit_review">Submit Review</string>
+    <string name="review_submitted_successfully">Review submitted successfully</string>
+    <string name="please_select_rating">Please select a rating</string>
+    <string name="rating_poor">Poor</string>
+    <string name="rating_fair">Fair</string>
+    <string name="rating_good">Good</string>
+    <string name="rating_very_good">Very Good</string>
+    <string name="rating_excellent">Excellent</string>
+    <string name="rating_based_on">Based on %d reviews</string>
+    <string name="no_reviews_yet">No reviews yet</string>
+    <string name="your_review">Your Review</string>
+    <string name="your_rating">Your review:</string>
+    <string name="write_a_review">Write a Review</string>
+    <string name="review_guide">Review Guide</string>
 </resources>

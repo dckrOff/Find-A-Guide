@@ -15,7 +15,8 @@ data class Booking(
     val numberOfPeople: Int = 1,
     val status: BookingStatus = BookingStatus.PENDING,
     val price: Double = 0.0,
-    val notes: String? = null
+    val notes: String? = null,
+    val userRating: Float = 0f // Рейтинг, поставленный пользователем
 )
 
 /**

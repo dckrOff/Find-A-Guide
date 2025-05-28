@@ -5,12 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import uz.dckroff.findaguide.model.Booking
 import uz.dckroff.findaguide.model.BookingStatus
 import uz.dckroff.findaguide.repository.BookingRepository
+import uz.dckroff.findaguide.repository.ReviewRepository
 import uz.dckroff.findaguide.di.RepositoryModule
 
 /**
@@ -19,6 +21,7 @@ import uz.dckroff.findaguide.di.RepositoryModule
 class BookingsViewModel : ViewModel() {
     
     private val bookingRepository: BookingRepository = RepositoryModule.provideBookingRepository()
+    private val reviewRepository: ReviewRepository = RepositoryModule.provideReviewRepository()
     
     // LiveData для предстоящих бронирований
     private val _upcomingBookings = MutableLiveData<List<Booking>>()
@@ -46,27 +49,51 @@ class BookingsViewModel : ViewModel() {
     fun loadAllBookings() {
         _isLoading.value = true
         
-        // Загружаем предстоящие бронирования
-        bookingRepository.getUpcomingBookings()
-            .onEach { bookings ->
-                _upcomingBookings.value = bookings
-            }
-            .catch { e ->
-                _error.value = e.message ?: "Failed to load upcoming bookings"
-            }
-            .launchIn(viewModelScope)
-        
-        // Загружаем прошедшие бронирования
-        bookingRepository.getPastBookings()
-            .onEach { bookings ->
-                _pastBookings.value = bookings
+        // Получаем отзывы пользователя
+        viewModelScope.launch {
+            try {
+                // Получаем все отзывы пользователя
+                val userReviews = reviewRepository.getUserReviews().firstOrNull() ?: emptyList()
+                
+                // Загружаем предстоящие бронирования
+                bookingRepository.getUpcomingBookings()
+                    .onEach { bookings ->
+                        _upcomingBookings.value = bookings
+                    }
+                    .catch { e ->
+                        _error.value = e.message ?: "Failed to load upcoming bookings"
+                    }
+                    .launchIn(viewModelScope)
+                
+                // Загружаем прошедшие бронирования и добавляем рейтинги
+                bookingRepository.getPastBookings()
+                    .onEach { bookings ->
+                        // Добавляем рейтинги к завершенным бронированиям
+                        val bookingsWithRatings = bookings.map { booking ->
+                            // Ищем отзыв для этого бронирования
+                            val review = userReviews.find { it.bookingId == booking.id }
+                            
+                            // Если отзыв найден, добавляем рейтинг к бронированию
+                            if (review != null) {
+                                booking.copy(userRating = review.rating)
+                            } else {
+                                booking
+                            }
+                        }
+                        
+                        _pastBookings.value = bookingsWithRatings
+                        _isLoading.value = false
+                    }
+                    .catch { e ->
+                        _error.value = e.message ?: "Failed to load past bookings"
+                        _isLoading.value = false
+                    }
+                    .launchIn(viewModelScope)
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to load bookings"
                 _isLoading.value = false
             }
-            .catch { e ->
-                _error.value = e.message ?: "Failed to load past bookings"
-                _isLoading.value = false
-            }
-            .launchIn(viewModelScope)
+        }
     }
     
     /**
