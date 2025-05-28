@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import uz.dckroff.findaguide.di.RepositoryModule
 import uz.dckroff.findaguide.model.Review
@@ -74,10 +75,15 @@ class ReviewViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                // Здесь была бы логика проверки существующего отзыва,
-                // но в текущей реализации репозитория нет такого метода
-                // Потенциально можно добавить эту функциональность в будущем
-
+                // Получаем все отзывы пользователя
+                val userReviews = reviewRepository.getUserReviews().firstOrNull() ?: emptyList()
+                
+                // Проверяем, есть ли отзыв для данного бронирования
+                val hasReview = userReviews.any { it.bookingId == bookingId }
+                
+                // Здесь можно было бы обновить LiveData с результатом проверки
+                // если бы это требовалось в UI
+                
                 _isLoading.value = false
             } catch (e: Exception) {
                 _error.value = e.message ?: "An error occurred"
