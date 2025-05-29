@@ -59,9 +59,12 @@ class SearchFragment : Fragment() {
     }
     
     private fun setupAdapter() {
-        guideAdapter = GuideAdapter { guide ->
-            navigateToGuideDetails(guide)
-        }
+        guideAdapter = GuideAdapter(
+            onGuideClick = { guide ->
+                navigateToGuideDetails(guide)
+            },
+            viewType = GuideAdapter.VIEW_TYPE_SEARCH
+        )
         binding.rvSearchResults.adapter = guideAdapter
     }
 

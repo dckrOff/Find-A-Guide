@@ -62,8 +62,8 @@ class ReviewActivity : AppCompatActivity() {
         if (guidePhoto.isNotEmpty()) {
             Glide.with(this)
                 .load(guidePhoto)
-                .placeholder(R.drawable.placeholder_guide)
-                .error(R.drawable.placeholder_guide)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.img_placeholder)
                 .into(binding.ivGuidePhoto)
         }
         

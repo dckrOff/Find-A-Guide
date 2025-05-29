@@ -12,14 +12,14 @@
         android:title="@string/search" />
 
     <item
-        android:id="@+id/mapFragment"
-        android:icon="@drawable/ic_map"
-        android:title="@string/map" />
-
-    <item
         android:id="@+id/bookingsFragment"
         android:icon="@drawable/ic_bookings"
         android:title="@string/bookings" />
+
+    <item
+        android:id="@+id/mapFragment"
+        android:icon="@drawable/ic_map"
+        android:title="@string/map" />
 
     <item
         android:id="@+id/profileFragment"

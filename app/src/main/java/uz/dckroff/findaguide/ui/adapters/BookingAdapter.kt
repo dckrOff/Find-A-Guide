@@ -51,7 +51,7 @@ class BookingAdapter(
         }
 
         fun bind(booking: Booking) {
-            binding.tvBookingDate.text = booking.date
+            binding.tvBookingDate.text = booking.formattedDate
             binding.tvBookingTime.text = booking.time
             binding.tvBookingDuration.text = "${booking.numberOfPeople} person(s)"
             binding.tvBookingPrice.text = "$${booking.price}"

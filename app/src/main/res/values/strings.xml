@@ -164,4 +164,19 @@
     <string name="your_rating">Your review:</string>
     <string name="write_a_review">Write a Review</string>
     <string name="review_guide">Review Guide</string>
+    
+    <!-- Contact Options -->
+    <string name="phone">Phone</string>
+    <string name="telegram">Telegram</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="instagram">Instagram</string>
+    <string name="contact_options">Contact Options</string>
+    <string name="choose_contact_method">Choose contact method</string>
+    <string name="no_contact_info">No contact information available</string>
+
+    <string name="call_directly">Call directly</string>
+    <string name="message_instantly">Message instantly</string>
+    <string name="chat_now">Chat now</string>
+    <string name="send_email">Send email</string>
+    <string name="go">Go</string>
 </resources>

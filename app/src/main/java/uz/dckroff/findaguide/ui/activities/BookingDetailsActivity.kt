@@ -15,6 +15,7 @@ import uz.dckroff.findaguide.databinding.ActivityBookingDetailsBinding
 import uz.dckroff.findaguide.model.BookingStatus
 import uz.dckroff.findaguide.ui.activities.ChatActivity
 import uz.dckroff.findaguide.viewmodel.BookingDetailsViewModel
+import uz.dckroff.findaguide.ui.dialog.ContactGuideDialog
 
 class BookingDetailsActivity : AppCompatActivity() {
 
@@ -75,7 +76,8 @@ class BookingDetailsActivity : AppCompatActivity() {
         binding.btnContactGuide.setOnClickListener {
             val guideId = viewModel.booking.value?.guideId
             if (!guideId.isNullOrEmpty()) {
-                navigateToChat(guideId)
+                // Загружаем информацию о гиде для отображения контактных данных
+                viewModel.loadGuideData(guideId)
             }
         }
         
@@ -89,7 +91,7 @@ class BookingDetailsActivity : AppCompatActivity() {
     private fun observeViewModel() {
         // Наблюдаем за данными бронирования
         viewModel.booking.observe(this) { booking ->
-            binding.tvBookingDate.text = booking.date
+            binding.tvBookingDate.text = booking.formattedDate
             binding.tvBookingTime.text = booking.time
             binding.tvBookingPeople.text = getString(R.string.booking_duration, booking.numberOfPeople)
             binding.tvBookingPrice.text = getString(R.string.price_value, booking.price)
@@ -97,8 +99,8 @@ class BookingDetailsActivity : AppCompatActivity() {
             // Загружаем фото гида
             Glide.with(this)
                 .load(booking.guidePhoto)
-                .placeholder(R.drawable.placeholder_guide)
-                .error(R.drawable.placeholder_guide)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.img_placeholder)
                 .into(binding.ivGuidePhoto)
             
             // Устанавливаем имя гида
@@ -160,6 +162,12 @@ class BookingDetailsActivity : AppCompatActivity() {
             }
         }
         
+        // Наблюдаем за данными гида для контактов
+        viewModel.guide.observe(this) { guide ->
+            // Показываем диалог с контактными данными
+            ContactGuideDialog(this, guide).show()
+        }
+        
         // Наблюдаем за статусом наличия отзыва
         viewModel.hasReview.observe(this) { hasReview ->
             val booking = viewModel.booking.value
@@ -216,13 +224,6 @@ class BookingDetailsActivity : AppCompatActivity() {
             }
             .setNegativeButton(R.string.no, null)
             .show()
-    }
-    
-    private fun navigateToChat(guideId: String) {
-        val intent = Intent(this, ChatActivity::class.java).apply {
-            putExtra("guideId", guideId)
-        }
-        startActivity(intent)
     }
     
     private fun navigateToReview(guideId: String, guideName: String, guidePhoto: String) {

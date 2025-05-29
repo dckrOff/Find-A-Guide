@@ -111,8 +111,8 @@ class BookingActivity : AppCompatActivity() {
             // Загружаем фото гида
             Glide.with(this)
                 .load(guide.photo)
-                .placeholder(R.drawable.placeholder_guide)
-                .error(R.drawable.placeholder_guide)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.img_placeholder)
                 .into(binding.ivGuidePhoto)
             
             // Обновляем общую стоимость

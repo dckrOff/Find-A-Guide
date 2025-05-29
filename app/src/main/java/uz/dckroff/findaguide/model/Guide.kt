@@ -13,5 +13,10 @@ data class Guide(
     val photo: String = "",
     val languages: List<String> = emptyList(),
     val specializations: List<String> = emptyList(),
-    val isOnline: Boolean = false
+    val isOnline: Boolean = false,
+    val phone: String = "",
+    val telegram: String = "",
+    val whatsapp: String = "",
+    val instagram: String = "",
+    val email: String = ""
 ) 

@@ -1,5 +1,6 @@
 package uz.dckroff.findaguide.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -10,7 +11,7 @@ import uz.dckroff.findaguide.R
 import uz.dckroff.findaguide.databinding.ItemDestinationBinding
 import uz.dckroff.findaguide.model.Destination
 
-class DestinationAdapter(private val onDestinationClick: (Destination) -> Unit) : 
+class DestinationAdapter(private val onDestinationClick: (Destination) -> Unit) :
     ListAdapter<Destination, DestinationAdapter.DestinationViewHolder>(DestinationDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DestinationViewHolder {
@@ -26,9 +27,9 @@ class DestinationAdapter(private val onDestinationClick: (Destination) -> Unit) 
         holder.bind(getItem(position))
     }
 
-    inner class DestinationViewHolder(private val binding: ItemDestinationBinding) : 
+    inner class DestinationViewHolder(private val binding: ItemDestinationBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        
+
         init {
             binding.root.setOnClickListener {
                 val position = bindingAdapterPosition
@@ -37,20 +38,23 @@ class DestinationAdapter(private val onDestinationClick: (Destination) -> Unit) 
                 }
             }
         }
-        
+
         fun bind(destination: Destination) {
             binding.tvDestinationName.text = destination.name
             binding.tvDestinationCountry.text = destination.description
             binding.tvGuideCount.text = binding.root.context.getString(
-                R.string.available_guides_count, 
-                destination.guidesCount
+                R.string.available_guides_count,
+                destination.guideCount
             )
-            
+
+            Log.e("TAG", "bind: destination name: ${destination.name}")
+            Log.e("TAG", "bind: destination photo: ${destination.imageUrl}")
+
             // Загружаем изображение направления с использованием Glide
             Glide.with(binding.root)
-                .load(destination.photo)
-                .placeholder(R.drawable.placeholder_destination)
-                .error(R.drawable.placeholder_destination)
+                .load(destination.imageUrl)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.img_placeholder)
                 .centerCrop()
                 .into(binding.ivDestination)
         }

@@ -52,9 +52,12 @@ class HomeFragment : Fragment() {
 
     private fun setupAdapters() {
         // Настраиваем адаптер для избранных гидов
-        guideAdapter = GuideAdapter { guide ->
-            navigateToGuideDetails(guide)
-        }
+        guideAdapter = GuideAdapter(
+            onGuideClick = { guide ->
+                navigateToGuideDetails(guide)
+            },
+            viewType = GuideAdapter.VIEW_TYPE_FEATURED
+        )
         binding.rvFeaturedGuides.adapter = guideAdapter
 
         // Настраиваем адаптер для популярных направлений

@@ -20,4 +20,38 @@
     <color name="status_confirmed">#2196F3</color>
     <color name="status_completed">#4CAF50</color>
     <color name="status_cancelled">#F44336</color>
+
+    <!-- Phone Card Colors -->
+    <color name="phone_card_color">#F8FFF8</color>
+    <color name="phone_text_color">#2E7D2E</color>
+    <color name="phone_subtitle_color">#6B9B6B</color>
+    <color name="phone_arrow_color">#4CAF50</color>
+
+    <!-- Telegram Card Colors -->
+    <color name="telegram_card_color">#F0F8FF</color>
+    <color name="telegram_text_color">#0066CC</color>
+    <color name="telegram_subtitle_color">#6699CC</color>
+    <color name="telegram_arrow_color">#0088cc</color>
+
+    <!-- WhatsApp Card Colors -->
+    <color name="whatsapp_card_color">#F0FFF4</color>
+    <color name="whatsapp_text_color">#1DA851</color>
+    <color name="whatsapp_subtitle_color">#66CC7A</color>
+    <color name="whatsapp_arrow_color">#25D366</color>
+
+    <!-- Instagram Card Colors -->
+    <color name="instagram_card_color">#FFF5F8</color>
+    <color name="instagram_text_color">#C13584</color>
+    <color name="instagram_subtitle_color">#E4669B</color>
+    <color name="instagram_arrow_color">#E4405F</color>
+
+    <!-- Email Card Colors -->
+    <color name="email_card_color">#FFF8F5</color>
+    <color name="email_text_color">#D84315</color>
+    <color name="email_subtitle_color">#FF7043</color>
+    <color name="email_arrow_color">#FF5722</color>
+
+    <!-- Button Colors -->
+    <color name="cancel_button_color">#666666</color>
+    <color name="cancel_button_ripple">#E0E0E0</color>
 </resources>

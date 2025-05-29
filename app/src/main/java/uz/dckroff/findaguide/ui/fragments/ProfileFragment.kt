@@ -2,6 +2,7 @@ package uz.dckroff.findaguide.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -88,6 +89,7 @@ class ProfileFragment : Fragment() {
         // Наблюдаем за ошибками
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             if (errorMessage.isNotEmpty()) {
+                Log.e("TAG", "observeViewModel: errorMessage: $errorMessage" )
                 Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
             }
         }

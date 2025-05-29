@@ -8,8 +8,10 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import uz.dckroff.findaguide.model.Booking
 import uz.dckroff.findaguide.model.BookingStatus
+import uz.dckroff.findaguide.model.Guide
 import uz.dckroff.findaguide.repository.BookingRepository
 import uz.dckroff.findaguide.repository.ReviewRepository
+import uz.dckroff.findaguide.repository.GuideRepository
 import uz.dckroff.findaguide.di.RepositoryModule
 
 /**
@@ -19,10 +21,15 @@ class BookingDetailsViewModel : ViewModel() {
     
     private val bookingRepository: BookingRepository = RepositoryModule.provideBookingRepository()
     private val reviewRepository: ReviewRepository = RepositoryModule.provideReviewRepository()
+    private val guideRepository: GuideRepository = RepositoryModule.provideGuideRepository()
     
     // LiveData для данных бронирования
     private val _booking = MutableLiveData<Booking>()
     val booking: LiveData<Booking> = _booking
+    
+    // LiveData для данных гида (для контактов)
+    private val _guide = MutableLiveData<Guide>()
+    val guide: LiveData<Guide> = _guide
     
     // LiveData для статуса загрузки
     private val _isLoading = MutableLiveData<Boolean>()
@@ -74,6 +81,24 @@ class BookingDetailsViewModel : ViewModel() {
                 _error.value = e.message ?: "Failed to load booking details"
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+    
+    /**
+     * Загрузить данные о гиде для отображения контактной информации
+     */
+    fun loadGuideData(guideId: String) {
+        viewModelScope.launch {
+            try {
+                val guideData = guideRepository.getGuideById(guideId)
+                if (guideData != null) {
+                    _guide.value = guideData
+                } else {
+                    _error.value = "Guide not found"
+                }
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Failed to load guide data"
             }
         }
     }

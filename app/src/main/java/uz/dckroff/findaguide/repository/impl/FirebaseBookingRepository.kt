@@ -1,5 +1,6 @@
 package uz.dckroff.findaguide.repository.impl
 
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -43,10 +44,25 @@ class FirebaseBookingRepository : BookingRepository {
                 }
                 
                 if (snapshot != null) {
-                    val bookings = snapshot.documents.mapNotNull { document ->
-                        document.toObject(Booking::class.java)
+                    try {
+                        val bookings = snapshot.documents.mapNotNull { document ->
+                            try {
+                                // Пробуем автоматическую десериализацию
+                                document.toObject(Booking::class.java)
+                            } catch (e: Exception) {
+                                // Если не получилось, используем ручную десериализацию
+                                val data = document.data
+                                if (data != null) {
+                                    Booking.fromMap(data)
+                                } else {
+                                    null
+                                }
+                            }
+                        }
+                        trySend(bookings)
+                    } catch (e: Exception) {
+                        close(e)
                     }
-                    trySend(bookings)
                 }
             }
         
@@ -73,10 +89,25 @@ class FirebaseBookingRepository : BookingRepository {
                 }
                 
                 if (snapshot != null) {
-                    val bookings = snapshot.documents.mapNotNull { document ->
-                        document.toObject(Booking::class.java)
+                    try {
+                        val bookings = snapshot.documents.mapNotNull { document ->
+                            try {
+                                // Пробуем автоматическую десериализацию
+                                document.toObject(Booking::class.java)
+                            } catch (e: Exception) {
+                                // Если не получилось, используем ручную десериализацию
+                                val data = document.data
+                                if (data != null) {
+                                    Booking.fromMap(data)
+                                } else {
+                                    null
+                                }
+                            }
+                        }
+                        trySend(bookings)
+                    } catch (e: Exception) {
+                        close(e)
                     }
-                    trySend(bookings)
                 }
             }
         
@@ -103,10 +134,25 @@ class FirebaseBookingRepository : BookingRepository {
                 }
                 
                 if (snapshot != null) {
-                    val bookings = snapshot.documents.mapNotNull { document ->
-                        document.toObject(Booking::class.java)
+                    try {
+                        val bookings = snapshot.documents.mapNotNull { document ->
+                            try {
+                                // Пробуем автоматическую десериализацию
+                                document.toObject(Booking::class.java)
+                            } catch (e: Exception) {
+                                // Если не получилось, используем ручную десериализацию
+                                val data = document.data
+                                if (data != null) {
+                                    Booking.fromMap(data)
+                                } else {
+                                    null
+                                }
+                            }
+                        }
+                        trySend(bookings)
+                    } catch (e: Exception) {
+                        close(e)
                     }
-                    trySend(bookings)
                 }
             }
         
@@ -116,7 +162,18 @@ class FirebaseBookingRepository : BookingRepository {
     override suspend fun getBookingById(bookingId: String): Booking? {
         return try {
             val document = bookingsCollection.document(bookingId).get().await()
-            document.toObject(Booking::class.java)
+            try {
+                // Пробуем автоматическую десериализацию
+                document.toObject(Booking::class.java)
+            } catch (e: Exception) {
+                // Если не получилось, используем ручную десериализацию
+                val data = document.data
+                if (data != null) {
+                    Booking.fromMap(data)
+                } else {
+                    null
+                }
+            }
         } catch (e: Exception) {
             null
         }
@@ -141,6 +198,9 @@ class FirebaseBookingRepository : BookingRepository {
             // Создаем уникальный ID для бронирования
             val bookingId = UUID.randomUUID().toString()
             
+            // Создаем текущую дату в формате Timestamp
+            val dateTimestamp = Timestamp.now()
+            
             // Создаем объект бронирования
             val booking = hashMapOf(
                 "id" to bookingId,
@@ -148,7 +208,7 @@ class FirebaseBookingRepository : BookingRepository {
                 "guideId" to guideId,
                 "guideName" to guideName,
                 "guidePhoto" to guidePhoto,
-                "date" to date,
+                "date" to dateTimestamp,
                 "time" to time,
                 "numberOfPeople" to numberOfPeople,
                 "status" to BookingStatus.PENDING.name,

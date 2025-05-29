@@ -13,6 +13,7 @@ import uz.dckroff.findaguide.R
 import uz.dckroff.findaguide.databinding.ActivityGuideDetailsBinding
 import uz.dckroff.findaguide.ui.adapters.ReviewAdapter
 import uz.dckroff.findaguide.viewmodel.GuideDetailsViewModel
+import uz.dckroff.findaguide.ui.dialog.ContactGuideDialog
 
 class GuideDetailsActivity : AppCompatActivity() {
 
@@ -65,7 +66,10 @@ class GuideDetailsActivity : AppCompatActivity() {
         
         // Setup chat button
         binding.btnChat.setOnClickListener {
-            navigateToChat()
+            // Показываем диалог с контактными данными
+            viewModel.guide.value?.let { guide ->
+                ContactGuideDialog(this, guide).show()
+            }
         }
         
         // Setup see all reviews button
@@ -89,8 +93,8 @@ class GuideDetailsActivity : AppCompatActivity() {
             // Загружаем фото гида
             Glide.with(this)
                 .load(guide.photo)
-                .placeholder(R.drawable.placeholder_guide)
-                .error(R.drawable.placeholder_guide)
+                .placeholder(R.drawable.img_placeholder)
+                .error(R.drawable.img_placeholder)
                 .into(binding.ivGuidePhoto)
             
             // Устанавливаем языки
@@ -143,13 +147,6 @@ class GuideDetailsActivity : AppCompatActivity() {
     
     private fun navigateToBooking() {
         val intent = Intent(this, BookingActivity::class.java).apply {
-            putExtra("guideId", guideId)
-        }
-        startActivity(intent)
-    }
-    
-    private fun navigateToChat() {
-        val intent = Intent(this, ChatActivity::class.java).apply {
             putExtra("guideId", guideId)
         }
         startActivity(intent)
