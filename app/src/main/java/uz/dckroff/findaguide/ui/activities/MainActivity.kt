@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import uz.dckroff.findaguide.R
 import uz.dckroff.findaguide.databinding.ActivityMainBinding
@@ -21,12 +20,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupToolbar()
         setupNavigation()
-    }
-
-    private fun setupToolbar() {
-        setSupportActionBar(binding.toolbar)
     }
 
     private fun setupNavigation() {
@@ -34,7 +28,7 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.navHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // Define top-level destinations (no back button)
+        // Define top-level destinations
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.homeFragment,
@@ -45,9 +39,6 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        // Connect toolbar with navigation
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
         // Connect bottom navigation with navigation controller
         binding.bottomNavigation.setupWithNavController(navController)
     }
@@ -55,7 +46,6 @@ class MainActivity : AppCompatActivity() {
     fun switchToTab(@IdRes tabId: Int) {
         binding.bottomNavigation.selectedItemId = tabId
     }
-
 
     override fun onSupportNavigateUp(): Boolean {
         val navHostFragment =
